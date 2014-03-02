@@ -1,0 +1,37 @@
+{
+  "name": "rejoin",
+  "version": "0.0.0",
+  "description": "Another Object/Relational-Mapper",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martinandert/rejoin.git"
+  },
+  "keywords": [
+    "orm",
+    "object",
+    "relational",
+    "mapper",
+    "or-mapper",
+    "database",
+    "rdbms"
+  ],
+  "author": {
+    "name": "Martin Andert",
+    "email": "mandert@gmail.com"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "make test"
+  },
+  "bugs": {
+    "url": "https://github.com/martinandert/rejoin/issues"
+  },
+  "homepage": "https://github.com/martinandert/rejoin",
+  "dependencies": {
+  },
+  "peerDependencies": {
+  },
+  "devDependencies": {
+  }
+}
