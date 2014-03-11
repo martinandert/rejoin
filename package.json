@@ -2,10 +2,17 @@
   "name": "rejoin",
   "version": "0.0.0",
   "description": "Another Object/Relational-Mapper",
-  "main": "index.js",
+  "author": {
+    "name": "Martin Andert",
+    "email": "mandert@gmail.com"
+  },
+  "homepage": "https://github.com/martinandert/rejoin",
   "repository": {
     "type": "git",
     "url": "https://github.com/martinandert/rejoin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/martinandert/rejoin/issues"
   },
   "keywords": [
     "orm",
@@ -16,32 +23,25 @@
     "database",
     "rdbms"
   ],
-  "author": {
-    "name": "Martin Andert",
-    "email": "mandert@gmail.com"
-  },
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
     "test": "make test"
   },
-  "bugs": {
-    "url": "https://github.com/martinandert/rejoin/issues"
-  },
-  "homepage": "https://github.com/martinandert/rejoin",
   "dependencies": {
     "extend": "~1.2.1",
     "callbacks": "~0.0.0",
-    "any-db": "^1.0.3",
-    "gesundheit": "^0.9.0",
-    "sql": "^0.35.0"
+    "sql": "~0.35.0"
   },
   "peerDependencies": {
-    "inflected": ">=1.1.3"
+    "inflected": ">=1.1.3",
+    "any-db": ">=2.x"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
     "mocha": "~1.17.1",
     "inflected": ">=1.1.3",
-    "any-db-postgres": "^2.1.0"
+    "any-db": "~2.1.0",
+    "any-db-postgres": "~2.1.1"
   }
 }
