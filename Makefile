@@ -7,7 +7,7 @@ test:
 .PHONY: test
 
 lint:
-	@jshint index.js lib/**/*.js
+	@jshint index.js lib
 
 install link:
 	@npm $@
