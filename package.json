@@ -31,7 +31,9 @@
   "dependencies": {
     "extend": "~1.2.1",
     "callbacks": "~0.0.0",
-    "sql": "~0.35.0"
+    "sql": "~0.35.0",
+    "sliced": "0.0.5",
+    "debug": "^0.7.4"
   },
   "peerDependencies": {
     "inflected": ">=1.1.3",
