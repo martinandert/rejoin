@@ -29,11 +29,11 @@
     "test": "make test"
   },
   "dependencies": {
-    "extend": "~1.2.1",
     "callbacks": "~0.0.0",
-    "sql": "~0.35.0",
+    "sql": "~0.37.0",
     "sliced": "0.0.5",
-    "debug": "^0.7.4"
+    "debug": "^0.7.4",
+    "lodash-node": "^2.4.1"
   },
   "peerDependencies": {
     "inflected": ">=1.1.3",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "mocha": "~1.17.1",
+    "mocha": "~1.18.2",
     "inflected": ">=1.1.3",
     "any-db": "~2.1.0",
     "any-db-postgres": "~2.1.1"
