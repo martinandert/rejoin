@@ -3,7 +3,8 @@
 module.exports = {
   rejoin: {
     errors: {
-      format: '%(attribute)s %(message)s',
+      record_invalid:   'Validation failed: %(errors)s',
+      format:           '%(attribute)s %(message)s',
 
       messages: {
         inclusion:                'is not included in the list',
@@ -26,7 +27,8 @@ module.exports = {
         less_than_or_equal_to:    'must be less than or equal to %(count)s',
         other_than:               'must be other than %(count)s',
         odd:                      'must be odd',
-        even:                     'must be even'
+        even:                     'must be even',
+        taken:                    'has already been taken'
       }
     }
   }

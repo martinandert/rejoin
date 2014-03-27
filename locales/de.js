@@ -1,10 +1,10 @@
-// The translations in this file can be added with:
-//   counterpart.registerTranslations('de', require('rejoin/locales/de');
+// The translations in this file can be added with: counterpart.registerTranslations('de', require('rejoin/locales/de');
 
 module.exports = {
   rejoin: {
     errors: {
-      format: '%(attribute)s %(message)s',
+      record_invalid:   'Gültigkeitsprüfung fehlgeschlagen: %(errors)s',
+      format:           '%(attribute)s %(message)s',
 
       messages: {
         inclusion:                'ist kein gültiger Wert',
@@ -27,7 +27,8 @@ module.exports = {
         less_than_or_equal_to:    'muss kleiner oder gleich %(count)s sein',
         other_than:               'darf nicht gleich %(count)s sein',
         odd:                      'muss eine ungerade Zahl sein',
-        even:                     'muss eine gerade Zahl sein'
+        even:                     'muss eine gerade Zahl sein',
+        taken:                    'ist bereits vergeben'
       }
     }
   }
