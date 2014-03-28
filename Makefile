@@ -2,7 +2,7 @@ BIN = ./node_modules/.bin
 PATH := $(BIN):$(PATH)
 
 test:
-	@mocha -R spec -b test/inflector.js
+	@mocha --reporter dot --ui tdd --bail --recursive
 
 .PHONY: test
 
