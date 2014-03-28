@@ -11,10 +11,10 @@ module.exports = Rejoin.createModel('Topic', {
     created_at:   Rejoin.DataType.DATETIME
   },
 
-  //callbacks: [{
-  //  on: Rejoin.Callback.AFTER_VALIDATION,
-  //  do: 'performAfterValidation'
-  //}],
+  callbacks: [{
+    on: Rejoin.Callback.AFTER_VALIDATION,
+    do: 'performAfterValidation'
+  }],
 
   prototype: {
     afterValidationPerformed: false,
@@ -27,8 +27,9 @@ module.exports = Rejoin.createModel('Topic', {
       return false;
     },
 
-    performAfterValidation: function() {
+    performAfterValidation: function(done) {
       this.afterValidationPerformed = true;
+      done();
     },
 
     myValidation: function() {

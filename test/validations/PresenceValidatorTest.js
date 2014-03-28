@@ -16,7 +16,7 @@ suite('presence validator', function() {
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.isValid(function(err, result) {
+      topic.validate(function(err, result) {
         if (err) { done(err); return; }
 
         assert.strictEqual(false, result);
@@ -27,7 +27,7 @@ suite('presence validator', function() {
         topic.setTitle('something');
         topic.setContent('    ');
 
-        topic.isValid(function(err, result) {
+        topic.validate(function(err, result) {
           if (err) { done(err); return; }
 
           assert.strictEqual(false, result);
@@ -36,7 +36,7 @@ suite('presence validator', function() {
 
           topic.setContent('like stuff');
 
-          topic.isValid(function(err, result) {
+          topic.validate(function(err, result) {
             if (err) { done(err); return; }
 
             assert.strictEqual(true, result);
@@ -54,7 +54,7 @@ suite('presence validator', function() {
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.isValid(function(err, result) {
+      topic.validate(function(err, result) {
         if (err) { done(err); return; }
 
         assert.strictEqual(false, result);
@@ -73,7 +73,7 @@ suite('presence validator', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      person.isValid(function(err, result) {
+      person.validate(function(err, result) {
         if (err) { done(err); return; }
 
         assert(!result);
@@ -84,8 +84,112 @@ suite('presence validator', function() {
       });
     });
   });
+
+  test('validatesPresenceOf for class', function(done) {
+    Person.validatesPresenceOf('karma');
+
+    Person.new(function(err, person) {
+      if (err) { done(err); return; }
+
+      person.validate(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert(!result);
+
+        assert.deepEqual(['cannot be blank'], person.getErrors().get('karma'));
+
+        person.setKarma('Cold');
+
+        person.validate(function(err, result) {
+          if (err) { done(err); return; }
+
+          assert(result);
+
+          done();
+        });
+      });
+    });
+  });
+
+  test('validatesPresenceOf with allowNull option', function(done) {
+    Topic.validatesPresenceOf('title', { allowNull: true });
+
+    Topic.new({ title: 'something' }, function(err, topic) {
+      if (err) { done(err); return; }
+
+      topic.validate(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert(result, topic.getErrors().getFullMessages().join(', '));
+
+        topic.setTitle('');
+
+        topic.validate(function(err, result) {
+          if (err) { done(err); return; }
+
+          assert(!result);
+          assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
+
+          topic.setTitle('  ');
+
+          topic.validate(function(err, result) {
+            if (err) { done(err); return; }
+
+            assert(!result);
+            assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
+
+            topic.setTitle(null);
+
+            topic.validate(function(err, result) {
+              if (err) { done(err); return; }
+
+              assert(result, topic.getErrors().getFullMessages().join(', '));
+
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  test('validatesPresenceOf with allowBlank option', function(done) {
+    Topic.validatesPresenceOf('title', { allowBlank: true });
+
+    Topic.new({ title: 'something' }, function(err, topic) {
+      if (err) { done(err); return; }
+
+      topic.validate(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert(result, topic.getErrors().getFullMessages().join(', '));
+
+        topic.setTitle('');
+
+        topic.validate(function(err, result) {
+          if (err) { done(err); return; }
+
+          assert(result, topic.getErrors().getFullMessages().join(', '));
+
+          topic.setTitle('  ');
+
+          topic.validate(function(err, result) {
+            if (err) { done(err); return; }
+
+            assert(result, topic.getErrors().getFullMessages().join(', '));
+
+            topic.setTitle(null);
+
+            topic.validate(function(err, result) {
+              if (err) { done(err); return; }
+
+              assert(result, topic.getErrors().getFullMessages().join(', '));
+
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
 });
-
-
-/*
-  */
