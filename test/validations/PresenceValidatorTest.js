@@ -2,13 +2,11 @@
 
 var assert  = require('assert');
 var Topic   = require('../models/Topic');
-var Person  = require('../models/Person');
 var _       = require('lodash-node');
 
 suite('presence validator', function() {
   teardown(function() {
     Topic.clearValidations();
-    Person.clearValidations();
   });
 
   test('validate presences', function(done) {
@@ -69,45 +67,19 @@ suite('presence validator', function() {
   });
 
   test('validates with custom error using quotes', function(done) {
-    Person.validatesPresenceOf('karma', { message: 'This string contains \'single\' and "double" quotes' });
+    Topic.validatesPresenceOf('title', { message: 'This string contains \'single\' and "double" quotes' });
 
-    Person.new(function(err, person) {
+    Topic.new(function(err, topic) {
       if (err) { done(err); return; }
 
-      person.validate(function(err, valid) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
         assert(!valid);
 
-        assert.equal('This string contains \'single\' and "double" quotes', _.last(person.getErrors().get('karma')));
+        assert.equal('This string contains \'single\' and "double" quotes', _.last(topic.getErrors().get('title')));
 
         done();
-      });
-    });
-  });
-
-  test('validatesPresenceOf for class', function(done) {
-    Person.validatesPresenceOf('karma');
-
-    Person.new(function(err, person) {
-      if (err) { done(err); return; }
-
-      person.validate(function(err, valid) {
-        if (err) { done(err); return; }
-
-        assert(!valid);
-
-        assert.deepEqual(['cannot be blank'], person.getErrors().get('karma'));
-
-        person.setKarma('Cold');
-
-        person.validate(function(err, valid) {
-          if (err) { done(err); return; }
-
-          assert(valid);
-
-          done();
-        });
       });
     });
   });

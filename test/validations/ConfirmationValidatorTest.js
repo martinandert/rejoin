@@ -3,13 +3,11 @@
 var assert  = require('assert');
 var Rejoin  = require('../../');
 var Topic   = require('../models/Topic');
-var Person  = require('../models/Person');
 var i18n    = require('counterpart');
 
 suite('confirmation validator', function() {
   teardown(function() {
     Topic.clearValidations();
-    Person.clearValidations();
   });
 
   test('no title confirmation', function(done) {
@@ -68,33 +66,6 @@ suite('confirmation validator', function() {
         topic.setTitleConfirmation('We should be confirmed');
 
         topic.validate(function(err, valid) {
-          if (err) { done(err); return; }
-
-          assert(valid);
-
-          done();
-        });
-      });
-    });
-  });
-
-  test('validatesConfirmationOf for class', function(done) {
-    Person.validatesConfirmationOf('karma');
-
-    Person.new(function(err, person) {
-      if (err) { done(err); return; }
-
-      person.setKarmaConfirmation('None');
-
-      person.validate(function(err, valid) {
-        if (err) { done(err); return; }
-
-        assert(!valid);
-        assert.deepEqual(['does not match Karma'], person.getErrors().get('karma_confirmation'));
-
-        person.setKarma('None');
-
-        person.validate(function(err, valid) {
           if (err) { done(err); return; }
 
           assert(valid);

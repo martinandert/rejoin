@@ -236,7 +236,7 @@ suite('length validator', function() {
     });
   });
 
-  test('validatesLengthOf nasty params', function() {
+  test('validatesLengthOf with invalid args', function() {
     assert.throws(function() { Topic.validatesLengthOf('title', { is: -5 });        });
     assert.throws(function() { Topic.validatesLengthOf('title', { minimum: 'a' });  });
     assert.throws(function() { Topic.validatesLengthOf('title', { maximum: 'a' });  });

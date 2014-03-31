@@ -2,12 +2,10 @@
 
 var assert  = require('assert');
 var Topic   = require('../models/Topic');
-var Person  = require('../models/Person');
 
 suite('acceptance validator', function() {
   teardown(function() {
     Topic.clearValidations();
-    Person.clearValidations();
   });
 
   test('terms of service agreement no acceptance', function(done) {
@@ -91,33 +89,6 @@ suite('acceptance validator', function() {
         topic.setTermsOfService('I agree.');
 
         topic.validate(function(err, valid) {
-          if (err) { done(err); return; }
-
-          assert(valid);
-
-          done();
-        });
-      });
-    });
-  });
-
-  test('validatesAcceptanceOf for class', function(done) {
-    Person.validatesAcceptanceOf('karma');
-
-    Person.new(function(err, person) {
-      if (err) { done(err); return; }
-
-      person.setKarma('');
-
-      person.validate(function(err, valid) {
-        if (err) { done(err); return; }
-
-        assert(!valid);
-        assert.deepEqual(['must be accepted'], person.getErrors().get('karma'));
-
-        person.setKarma('1');
-
-        person.validate(function(err, valid) {
           if (err) { done(err); return; }
 
           assert(valid);
