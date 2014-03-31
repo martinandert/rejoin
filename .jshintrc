@@ -9,6 +9,10 @@
     "require": false,
     "process": false,
     "module": false,
-    "exports": false
+    "exports": false,
+    "suite": false,
+    "test": false,
+    "setup": false,
+    "teardown": false
   }
 }

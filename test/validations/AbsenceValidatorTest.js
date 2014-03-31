@@ -1,5 +1,6 @@
+'use strict';
+
 var assert  = require('assert');
-var Rejoin  = require('../../');
 var Topic   = require('../models/Topic');
 var Person  = require('../models/Person');
 var _       = require('lodash-node');
@@ -19,10 +20,10 @@ suite('absence validator', function() {
       topic.setTitle('foo');
       topic.setContent('bar');
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, result);
+        assert.strictEqual(false, valid);
 
         assert.deepEqual(['must be blank'], topic.getErrors().get('title'));
         assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
@@ -30,19 +31,19 @@ suite('absence validator', function() {
         topic.setTitle('');
         topic.setContent('something');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert.strictEqual(false, result);
+          assert.strictEqual(false, valid);
 
           assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
 
           topic.setContent('');
 
-          topic.validate(function(err, result) {
+          topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert.strictEqual(true, result);
+            assert.strictEqual(true, valid);
 
             done();
           });
@@ -60,10 +61,10 @@ suite('absence validator', function() {
       topic.setTitle('foo');
       topic.setContent('bar');
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, result);
+        assert.strictEqual(false, valid);
 
         assert.deepEqual(['must be blank'], topic.getErrors().get('title'));
         assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
@@ -81,10 +82,10 @@ suite('absence validator', function() {
 
       person.setKarma('good');
 
-      person.validate(function(err, result) {
+      person.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
 
         assert.equal('This string contains \'single\' and "double" quotes', _.last(person.getErrors().get('karma')));
 
@@ -101,19 +102,19 @@ suite('absence validator', function() {
 
       person.setKarma('good');
 
-      person.validate(function(err, result) {
+      person.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
 
         assert.deepEqual(['must be blank'], person.getErrors().get('karma'));
 
         person.setKarma(null);
 
-        person.validate(function(err, result) {
+        person.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(result);
+          assert(valid);
 
           done();
         });

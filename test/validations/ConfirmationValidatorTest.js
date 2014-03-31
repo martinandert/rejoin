@@ -1,8 +1,9 @@
+'use strict';
+
 var assert  = require('assert');
 var Rejoin  = require('../../');
 var Topic   = require('../models/Topic');
 var Person  = require('../models/Person');
-var _       = require('lodash-node');
 var i18n    = require('counterpart');
 
 suite('confirmation validator', function() {
@@ -17,33 +18,33 @@ suite('confirmation validator', function() {
     Topic.new({ author_name: 'Plutarch' }, function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(result);
+        assert(valid);
 
         topic.setTitleConfirmation('Parallel Lives');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(!result);
+          assert(!valid);
 
           topic.setTitleConfirmation(null);
           topic.setTitle('Parallel Lives');
 
-          topic.validate(function(err, result) {
+          topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
             // active model assert validity here
-            assert(!result);
+            assert(!valid);
 
             topic.setTitleConfirmation('Parallel Lives');
 
-            topic.validate(function(err, result) {
+            topic.validate(function(err, valid) {
               if (err) { done(err); return; }
 
-              assert(result);
+              assert(valid);
 
               done();
             });
@@ -59,17 +60,17 @@ suite('confirmation validator', function() {
     Topic.new({ title: 'We should be confirmed', title_confirmation: '' }, function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
 
         topic.setTitleConfirmation('We should be confirmed');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(result);
+          assert(valid);
 
           done();
         });
@@ -85,18 +86,18 @@ suite('confirmation validator', function() {
 
       person.setKarmaConfirmation('None');
 
-      person.validate(function(err, result) {
+      person.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
         assert.deepEqual(['does not match Karma'], person.getErrors().get('karma_confirmation'));
 
         person.setKarma('None');
 
-        person.validate(function(err, result) {
+        person.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(result);
+          assert(valid);
 
           done();
         });
@@ -128,10 +129,10 @@ suite('confirmation validator', function() {
     Topic.new({ title: 'We should be confirmed', title_confirmation: '' }, function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
         assert.deepEqual(['doesn\'t match Test Title'], topic.getErrors().get('title_confirmation'));
 
         done();
@@ -158,7 +159,7 @@ suite('confirmation validator', function() {
       assert.equal('expected title', record.getTitleConfirmation());
 
       done();
-    })
+    });
   });
 
   test('does not override confirmation writer if present', function(done) {
@@ -182,6 +183,6 @@ suite('confirmation validator', function() {
       assert.equal('expected title', record.titleConfirmation);
 
       done();
-    })
+    });
   });
 });

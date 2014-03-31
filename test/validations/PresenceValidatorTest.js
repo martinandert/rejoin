@@ -1,5 +1,6 @@
+'use strict';
+
 var assert  = require('assert');
-var Rejoin  = require('../../');
 var Topic   = require('../models/Topic');
 var Person  = require('../models/Person');
 var _       = require('lodash-node');
@@ -16,10 +17,10 @@ suite('presence validator', function() {
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, result);
+        assert.strictEqual(false, valid);
 
         assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
         assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
@@ -27,19 +28,19 @@ suite('presence validator', function() {
         topic.setTitle('something');
         topic.setContent('    ');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert.strictEqual(false, result);
+          assert.strictEqual(false, valid);
 
           assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
 
           topic.setContent('like stuff');
 
-          topic.validate(function(err, result) {
+          topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert.strictEqual(true, result);
+            assert.strictEqual(true, valid);
 
             done();
           });
@@ -54,10 +55,10 @@ suite('presence validator', function() {
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, result);
+        assert.strictEqual(false, valid);
 
         assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
         assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
@@ -73,10 +74,10 @@ suite('presence validator', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      person.validate(function(err, result) {
+      person.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
 
         assert.equal('This string contains \'single\' and "double" quotes', _.last(person.getErrors().get('karma')));
 
@@ -91,19 +92,19 @@ suite('presence validator', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      person.validate(function(err, result) {
+      person.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(!result);
+        assert(!valid);
 
         assert.deepEqual(['cannot be blank'], person.getErrors().get('karma'));
 
         person.setKarma('Cold');
 
-        person.validate(function(err, result) {
+        person.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(result);
+          assert(valid);
 
           done();
         });
@@ -117,33 +118,33 @@ suite('presence validator', function() {
     Topic.new({ title: 'something' }, function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(result, topic.getErrors().getFullMessages().join(', '));
+        assert(valid, topic.getErrors().getFullMessages().join(', '));
 
         topic.setTitle('');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(!result);
+          assert(!valid);
           assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
 
           topic.setTitle('  ');
 
-          topic.validate(function(err, result) {
+          topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert(!result);
+            assert(!valid);
             assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
 
             topic.setTitle(null);
 
-            topic.validate(function(err, result) {
+            topic.validate(function(err, valid) {
               if (err) { done(err); return; }
 
-              assert(result, topic.getErrors().getFullMessages().join(', '));
+              assert(valid, topic.getErrors().getFullMessages().join(', '));
 
               done();
             });
@@ -159,31 +160,31 @@ suite('presence validator', function() {
     Topic.new({ title: 'something' }, function(err, topic) {
       if (err) { done(err); return; }
 
-      topic.validate(function(err, result) {
+      topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert(result, topic.getErrors().getFullMessages().join(', '));
+        assert(valid, topic.getErrors().getFullMessages().join(', '));
 
         topic.setTitle('');
 
-        topic.validate(function(err, result) {
+        topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert(result, topic.getErrors().getFullMessages().join(', '));
+          assert(valid, topic.getErrors().getFullMessages().join(', '));
 
           topic.setTitle('  ');
 
-          topic.validate(function(err, result) {
+          topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert(result, topic.getErrors().getFullMessages().join(', '));
+            assert(valid, topic.getErrors().getFullMessages().join(', '));
 
             topic.setTitle(null);
 
-            topic.validate(function(err, result) {
+            topic.validate(function(err, valid) {
               if (err) { done(err); return; }
 
-              assert(result, topic.getErrors().getFullMessages().join(', '));
+              assert(valid, topic.getErrors().getFullMessages().join(', '));
 
               done();
             });

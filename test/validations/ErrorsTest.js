@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert');
 var sinon  = require('sinon');
 
@@ -163,7 +165,7 @@ suite('validation errors', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      message = function() { return 'cannot be blank'; };
+      var message = function() { return 'cannot be blank'; };
       person.getErrors().add('name', message);
 
       assert.deepEqual(['cannot be blank'], person.getErrors().get('name'));
@@ -199,7 +201,7 @@ suite('validation errors', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      message = function() { return 'cannot be blank'; };
+      var message = function() { return 'cannot be blank'; };
       person.getErrors().add('name', message);
 
       assert.strictEqual(true, person.getErrors().added('name', message));
