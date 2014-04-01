@@ -10,7 +10,7 @@ suite('exclusion validator', function() {
   });
 
   test('default validatesExclusionOf', function(done) {
-    Topic.validatesExclusionOf('title', { in: ['abe', 'monkey'] });
+    Topic.validatesExclusionOf('title', { in: ['ape', 'monkey'] });
 
     async.parallel([
       tc({ title: 'something', content: 'abc' }, true),
@@ -61,7 +61,7 @@ suite('exclusion validator', function() {
   });
 
   test('validatesExclusionOf with custom message', function(done) {
-    Topic.validatesExclusionOf('title', { in: ['abe', 'monkey'], message: 'option %(value)s is restricted' });
+    Topic.validatesExclusionOf('title', { in: ['ape', 'monkey'], message: 'option %(value)s is restricted' });
 
     Topic.new({ title: 'something', content: 'abc' }, function(err, topic) {
       if (err) { done(err); return; }
@@ -86,7 +86,7 @@ suite('exclusion validator', function() {
   });
 
   test('validatesExclusionOf with within option', function(done) {
-    Topic.validatesExclusionOf('title', { within: ['abe', 'monkey'] });
+    Topic.validatesExclusionOf('title', { within: ['ape', 'monkey'] });
 
     Topic.new({ title: 'something', content: 'abc' }, function(err, topic) {
       if (err) { done(err); return; }
@@ -111,7 +111,7 @@ suite('exclusion validator', function() {
   });
 
   test('validatesExclusionOf with function', function(done) {
-    Topic.validatesExclusionOf('title', { within: function(topic) { return topic.getAuthorName() === 'sikachu' ? ['monkey', 'elephant'] : ['abe', 'wasabi']; } });
+    Topic.validatesExclusionOf('title', { within: function(topic) { return topic.getAuthorName() === 'sikachu' ? ['monkey', 'elephant'] : ['ape', 'wasabi']; } });
 
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }

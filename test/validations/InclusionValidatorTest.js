@@ -135,7 +135,7 @@ suite('inclusion validator', function() {
   });
 
   test('validatesInclusionOf with function', function(done) {
-    Topic.validatesInclusionOf('title', { within: function(topic) { return topic.getAuthorName() === 'sikachu' ? ['monkey', 'elephant'] : ['abe', 'wasabi']; } });
+    Topic.validatesInclusionOf('title', { within: function(topic) { return topic.getAuthorName() === 'sikachu' ? ['monkey', 'elephant'] : ['ape', 'wasabi']; } });
 
     Topic.new(function(err, topic) {
       if (err) { done(err); return; }
