@@ -222,7 +222,7 @@ suite('validation callbacks', function() {
         if (err) { done(err); return; }
 
         assert.deepEqual([], dog.getHistory());
-        assert.strictEqual(false, valid);
+        assert.strictEqual(valid, false);
 
         done();
       });
@@ -237,7 +237,7 @@ suite('validation callbacks', function() {
         if (err) { done(err); return; }
 
         assert.deepEqual(dog.getHistory(), ['before_validation_marker']);
-        assert.strictEqual(false, valid);
+        assert.strictEqual(valid, false);
 
         done();
       });

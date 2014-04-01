@@ -18,7 +18,7 @@ suite('presence validator', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, valid);
+        assert.strictEqual(valid, false);
 
         assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
         assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);
@@ -29,7 +29,7 @@ suite('presence validator', function() {
         topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert.strictEqual(false, valid);
+          assert.strictEqual(valid, false);
 
           assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);
 
@@ -38,7 +38,7 @@ suite('presence validator', function() {
           topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert.strictEqual(true, valid);
+            assert.strictEqual(valid, true);
 
             done();
           });
@@ -56,7 +56,7 @@ suite('presence validator', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, valid);
+        assert.strictEqual(valid, false);
 
         assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
         assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);

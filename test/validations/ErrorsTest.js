@@ -44,13 +44,13 @@ suite('validation errors', function() {
     var errors = new Errors(this);
     errors.set('foo', 'bar');
 
-    assert.strictEqual(true, errors.includes('foo'), 'errors should have key "foo"');
+    assert.strictEqual(errors.includes('foo'), true, 'errors should have key "foo"');
   });
 
   test('not includes', function() {
     var errors = new Errors(this);
 
-    assert.strictEqual(false, errors.includes('name'), 'errors should not have key "name"');
+    assert.strictEqual(errors.includes('name'), false, 'errors should not have key "name"');
   });
 
   test('get returns the errors for the provided key', function() {
@@ -180,7 +180,7 @@ suite('validation errors', function() {
 
       person.getErrors().add('name', 'cannot be blank');
 
-      assert.strictEqual(true, person.getErrors().added('name', 'cannot be blank'));
+      assert.strictEqual(person.getErrors().added('name', 'cannot be blank'), true);
 
       done();
     });
@@ -191,7 +191,7 @@ suite('validation errors', function() {
       if (err) { done(err); return; }
 
       person.getErrors().add('name', ':blank');
-      assert.strictEqual(true, person.getErrors().added('name', ':blank'));
+      assert.strictEqual(person.getErrors().added('name', ':blank'), true);
 
       done();
     });
@@ -204,7 +204,7 @@ suite('validation errors', function() {
       var message = function() { return 'cannot be blank'; };
       person.getErrors().add('name', message);
 
-      assert.strictEqual(true, person.getErrors().added('name', message));
+      assert.strictEqual(person.getErrors().added('name', message), true);
 
       done();
     });
@@ -215,7 +215,7 @@ suite('validation errors', function() {
       if (err) { done(err); return; }
 
       person.getErrors().add('name');
-      assert.strictEqual(true, person.getErrors().added('name'));
+      assert.strictEqual(person.getErrors().added('name'), true);
 
       done();
     });
@@ -228,7 +228,7 @@ suite('validation errors', function() {
       person.getErrors().add('name', 'cannot be blank');
       person.getErrors().add('name', 'is invalid');
 
-      assert.strictEqual(true, person.getErrors().added('name', 'cannot be blank'));
+      assert.strictEqual(person.getErrors().added('name', 'cannot be blank'), true);
 
       done();
     });
@@ -238,7 +238,7 @@ suite('validation errors', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      assert.strictEqual(false, person.getErrors().added('name'));
+      assert.strictEqual(person.getErrors().added('name'), false);
 
       done();
     });
@@ -250,7 +250,7 @@ suite('validation errors', function() {
 
       person.getErrors().add('name', 'is invalid');
 
-      assert.strictEqual(false, person.getErrors().added('name', 'cannot be blank'));
+      assert.strictEqual(person.getErrors().added('name', 'cannot be blank'), false);
 
       done();
     });

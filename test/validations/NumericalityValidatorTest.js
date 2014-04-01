@@ -27,7 +27,7 @@ function checkValid(invalids) {
         topic.validate(function(err, valid) {
           if (err) { cb(err); return; }
 
-          assert.strictEqual(true, valid, '"' + String(value) + '" not accepted as a number');
+          assert.strictEqual(valid, true, '"' + String(value) + '" not accepted as a number');
 
           cb();
         });
@@ -47,7 +47,7 @@ function checkInvalid(invalids, error) {
         topic.validate(function(err, valid) {
           if (err) { cb(err); return; }
 
-          assert.strictEqual(false, valid, '"' + String(value) + '" not rejected as a number');
+          assert.strictEqual(valid, false, '"' + String(value) + '" not rejected as a number');
           assert(topic.getErrors().get('approved').length > 0);
 
           if (error) {

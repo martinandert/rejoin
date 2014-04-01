@@ -26,7 +26,7 @@ suite('length validator', function() {
 
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
-            assert.strictEqual(result, valid);
+            assert.strictEqual(valid, result);
             cb();
           });
         });
@@ -51,7 +51,7 @@ suite('length validator', function() {
 
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
-            assert.strictEqual(result, valid);
+            assert.strictEqual(valid, result);
             cb();
           });
         });

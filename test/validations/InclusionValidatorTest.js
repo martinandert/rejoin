@@ -25,14 +25,14 @@ suite('inclusion validator', function() {
         topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert.strictEqual(true, valid);
+          assert.strictEqual(valid, true);
 
           topic.setTitle('uhoh');
 
           topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert.strictEqual(false, valid);
+            assert.strictEqual(valid, false);
             assert.deepEqual(topic.getErrors().get('title'), ['is not included in the list']);
 
             done();
@@ -49,7 +49,7 @@ suite('inclusion validator', function() {
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
 
-            assert.strictEqual(result, valid);
+            assert.strictEqual(valid, result);
 
             cb();
           });
@@ -75,7 +75,7 @@ suite('inclusion validator', function() {
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
 
-            assert.strictEqual(result, valid);
+            assert.strictEqual(valid, result);
 
             cb();
           });

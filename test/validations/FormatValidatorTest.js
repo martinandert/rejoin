@@ -18,7 +18,7 @@ suite('format validator', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.strictEqual(false, valid);
+        assert.strictEqual(valid, false);
         assert.deepEqual(topic.getErrors().get('title'), ['is bad data']);
         assert(topic.getErrors().get('content').length === 0);
 
@@ -27,7 +27,7 @@ suite('format validator', function() {
         topic.validate(function(err, valid) {
           if (err) { done(err); return; }
 
-          assert.strictEqual(true, valid);
+          assert.strictEqual(valid, true);
           assert(topic.getErrors().get('title').length === 0);
 
           done();
@@ -53,7 +53,7 @@ suite('format validator', function() {
 
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
-            assert.strictEqual(result, valid);
+            assert.strictEqual(valid, result);
             cb();
           });
         });
@@ -82,7 +82,7 @@ suite('format validator', function() {
           topic.validate(function(err, valid) {
             if (err) { done(err); return; }
 
-            assert.strictEqual(true, valid);
+            assert.strictEqual(valid, true);
             assert(topic.getErrors().get('title').length === 0);
 
             done();
