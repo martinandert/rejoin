@@ -38,8 +38,8 @@ module.exports = Rejoin.createModel('Topic', {
       }
     },
 
-    myValidationWithArgs: function(getter, attr) {
-      if (this[getter]() === null) {
+    myValidationWithArg: function(attr) {
+      if (this._attributes[attr] === null) {
         this.getErrors().add(attr, 'is missing');
       }
     }
