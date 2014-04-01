@@ -1,12 +1,21 @@
 'use strict';
 
+var _       = require('lodash-node');
 var assert  = require('assert');
 var Rejoin  = require('../../');
 var Topic   = require('../models/Topic');
-var i18n    = require('counterpart');
+var I18n    = require('counterpart');
 
 suite('confirmation validator', function() {
+  var translations;
+
+  setup(function() {
+    translations = _.clone(I18n.__registry.translations);
+    I18n.__registry.translations = {};
+  });
+
   teardown(function() {
+    I18n.__registry.translations = translations;
     Topic.clearValidations();
   });
 
@@ -77,9 +86,7 @@ suite('confirmation validator', function() {
   });
 
   test('title confirmation with i18n attribute', function(done) {
-    var translations = i18n.__registry.translations;
-
-    i18n.registerTranslations('en', {
+    I18n.registerTranslations('en', {
       rejoin: {
         errors: {
           messages: {
@@ -104,13 +111,11 @@ suite('confirmation validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['doesn\'t match Test Title'], topic.getErrors().get('title_confirmation'));
+        assert.deepEqual(topic.getErrors().get('title_confirmation'), ['doesn\'t match Test Title']);
 
         done();
       });
     });
-
-    i18n.__registry.translations = translations;
   });
 
   test('does not override confirmation reader if present', function(done) {
@@ -127,7 +132,7 @@ suite('confirmation validator', function() {
     model.new(function(err, record) {
       if (err) { done(err); return; }
 
-      assert.equal('expected title', record.getTitleConfirmation());
+      assert.equal(record.getTitleConfirmation(), 'expected title');
 
       done();
     });
@@ -151,7 +156,7 @@ suite('confirmation validator', function() {
 
       record.setTitleConfirmation('expected title');
 
-      assert.equal('expected title', record.titleConfirmation);
+      assert.equal(record.titleConfirmation, 'expected title');
 
       done();
     });

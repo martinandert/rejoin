@@ -20,8 +20,8 @@ suite('presence validator', function() {
 
         assert.strictEqual(false, valid);
 
-        assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
-        assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
+        assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);
 
         topic.setTitle('something');
         topic.setContent('    ');
@@ -31,7 +31,7 @@ suite('presence validator', function() {
 
           assert.strictEqual(false, valid);
 
-          assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
+          assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);
 
           topic.setContent('like stuff');
 
@@ -58,8 +58,8 @@ suite('presence validator', function() {
 
         assert.strictEqual(false, valid);
 
-        assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
-        assert.deepEqual(['cannot be blank'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
+        assert.deepEqual(topic.getErrors().get('content'), ['cannot be blank']);
 
         done();
       });
@@ -101,7 +101,7 @@ suite('presence validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
 
           topic.setTitle('  ');
 
@@ -109,7 +109,7 @@ suite('presence validator', function() {
             if (err) { done(err); return; }
 
             assert(!valid);
-            assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
+            assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
 
             topic.setTitle(null);
 

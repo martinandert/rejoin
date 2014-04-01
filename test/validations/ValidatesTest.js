@@ -44,7 +44,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['is not a number'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is not a number']);
 
         topic.setTitle(123);
 
@@ -68,7 +68,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['my custom message'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('content'), ['my custom message']);
 
         done();
       });
@@ -84,7 +84,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['is not an email'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is not an email']);
 
         done();
       });
@@ -100,7 +100,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['cannot be blank'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['cannot be blank']);
 
         done();
       });
@@ -116,7 +116,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['cannot be blank', 'is not an email'], topic.getErrors().get('title').sort());
+        assert.deepEqual(topic.getErrors().get('title').sort(), ['cannot be blank', 'is not an email']);
 
         done();
       });
@@ -165,7 +165,7 @@ suite('validates', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['is invalid'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is invalid']);
 
         topic.setTitle('positive');
 
@@ -190,7 +190,7 @@ suite('validates', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['is not included in the list'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is not included in the list']);
 
         topic.setTitle('m');
 
@@ -214,7 +214,7 @@ suite('validates', function() {
       topic.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['my custom message'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['my custom message']);
 
         done();
       });
@@ -240,7 +240,7 @@ suite('validates', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['Y U NO CONFIRM'], topic.getErrors().get('title_confirmation'));
+        assert.deepEqual(topic.getErrors().get('title_confirmation'), ['Y U NO CONFIRM']);
 
         done();
       });

@@ -34,7 +34,7 @@ suite('acceptance validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['must be accepted'], topic.getErrors().get('terms_of_service'));
+        assert.deepEqual(topic.getErrors().get('terms_of_service'), ['must be accepted']);
 
         topic.setTermsOfService('1');
 
@@ -59,7 +59,7 @@ suite('acceptance validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['must be abided'], topic.getErrors().get('eula'));
+        assert.deepEqual(topic.getErrors().get('eula'), ['must be abided']);
 
         topic.setEula('1');
 
@@ -84,7 +84,7 @@ suite('acceptance validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['must be accepted'], topic.getErrors().get('terms_of_service'));
+        assert.deepEqual(topic.getErrors().get('terms_of_service'), ['must be accepted']);
 
         topic.setTermsOfService('I agree.');
 

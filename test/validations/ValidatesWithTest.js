@@ -237,8 +237,8 @@ suite('validatesWith', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['Value is Title'], topic.getErrors().get('title'));
-        assert.deepEqual(['Value is Content'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('title'), ['Value is Title']);
+        assert.deepEqual(topic.getErrors().get('content'), ['Value is Content']);
 
         done();
       });
@@ -268,7 +268,7 @@ suite('validatesWith', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length === 0);
-        assert.deepEqual(['Value is '], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('content'), ['Value is ']);
 
         done();
       });
@@ -311,7 +311,7 @@ suite('validatesWith', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is missing'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is missing']);
 
           done();
         });
@@ -330,7 +330,7 @@ suite('validatesWith', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length === 0);
-        assert.deepEqual(['is missing'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('content'), ['is missing']);
 
         done();
       });

@@ -23,8 +23,8 @@ suite('absence validator', function() {
 
         assert.strictEqual(false, valid);
 
-        assert.deepEqual(['must be blank'], topic.getErrors().get('title'));
-        assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('title'), ['must be blank']);
+        assert.deepEqual(topic.getErrors().get('content'), ['must be blank']);
 
         topic.setTitle('');
         topic.setContent('something');
@@ -34,7 +34,7 @@ suite('absence validator', function() {
 
           assert.strictEqual(false, valid);
 
-          assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
+          assert.deepEqual(topic.getErrors().get('content'), ['must be blank']);
 
           topic.setContent('');
 
@@ -64,8 +64,8 @@ suite('absence validator', function() {
 
         assert.strictEqual(false, valid);
 
-        assert.deepEqual(['must be blank'], topic.getErrors().get('title'));
-        assert.deepEqual(['must be blank'], topic.getErrors().get('content'));
+        assert.deepEqual(topic.getErrors().get('title'), ['must be blank']);
+        assert.deepEqual(topic.getErrors().get('content'), ['must be blank']);
 
         done();
       });

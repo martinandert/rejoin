@@ -19,7 +19,7 @@ suite('format validator', function() {
         if (err) { done(err); return; }
 
         assert.strictEqual(false, valid);
-        assert.deepEqual(['is bad data'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is bad data']);
         assert(topic.getErrors().get('content').length === 0);
 
         topic.setTitle('Validation macros rule!');
@@ -71,7 +71,7 @@ suite('format validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['is bad data'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['is bad data']);
         assert(topic.getErrors().get('content').length === 0);
 
         async.series([ tc('-11'), tc('03'), tc('z44'), tc('5v7')], function(err) {
@@ -114,7 +114,7 @@ suite('format validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['can\'t be Invalid title'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['can\'t be Invalid title']);
 
         done();
       });
@@ -140,7 +140,7 @@ suite('format validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['should not contain foo'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['should not contain foo']);
 
         topic.setTitle('something else');
 

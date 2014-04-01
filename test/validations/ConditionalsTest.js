@@ -19,7 +19,7 @@ suite('validation conditionals', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length > 0);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -71,7 +71,7 @@ suite('validation conditionals', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length > 0);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -89,7 +89,7 @@ suite('validation conditionals', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length > 0);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -141,7 +141,7 @@ suite('validation conditionals', function() {
 
         assert(!valid);
         assert(topic.getErrors().get('title').length > 0);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });

@@ -84,7 +84,7 @@ suite('length validator', function() {
           topic.validate(function(err, valid) {
             if (err) { cb(err); return; }
             assert(!valid);
-            assert.deepEqual(['is too short (minimum is 5 characters)'], topic.getErrors().get('title'));
+            assert.deepEqual(topic.getErrors().get('title'), ['is too short (minimum is 5 characters)']);
             cb();
           });
         };
@@ -143,7 +143,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is too long (maximum is 5 characters)'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is too long (maximum is 5 characters)']);
 
           topic.setTitle('');
 
@@ -194,7 +194,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is the wrong length (should be 5 characters)'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is the wrong length (should be 5 characters)']);
 
           topic.setTitle('');
 
@@ -253,7 +253,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['boo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['boo 5']);
 
         done();
       });
@@ -270,7 +270,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -287,7 +287,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['boo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['boo 5']);
 
         done();
       });
@@ -304,7 +304,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -321,7 +321,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['boo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['boo 5']);
 
         done();
       });
@@ -338,7 +338,7 @@ suite('length validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['hoo 5'], topic.getErrors().get('title'));
+        assert.deepEqual(topic.getErrors().get('title'), ['hoo 5']);
 
         done();
       });
@@ -385,7 +385,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is too short (minimum is 5 characters)'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is too short (minimum is 5 characters)']);
 
           done();
         });
@@ -409,7 +409,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is too long (maximum is 5 characters)'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is too long (maximum is 5 characters)']);
 
           done();
         });
@@ -433,7 +433,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['is the wrong length (should be 5 characters)'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['is the wrong length (should be 5 characters)']);
 
           done();
         });
@@ -461,7 +461,7 @@ suite('length validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['Your essay must be at least 5 words.'], topic.getErrors().get('content'));
+          assert.deepEqual(topic.getErrors().get('content'), ['Your essay must be at least 5 words.']);
 
           done();
         });

@@ -57,7 +57,7 @@ suite('validation errors', function() {
     var errors = new Errors(this);
     errors.set('foo', 'omg');
 
-    assert.deepEqual(['omg'], errors.get('foo'));
+    assert.deepEqual(errors.get('foo'), ['omg']);
   });
 
   test('sets the error with the provided key', function() {
@@ -81,7 +81,7 @@ suite('validation errors', function() {
     errors.set('foo', 'omg');
     errors.set('baz', 'zomg');
 
-    assert.deepEqual(['foo', 'baz'], errors.getKeys());
+    assert.deepEqual(errors.getKeys(), ['foo', 'baz']);
   });
 
   test('clear', function(done) {
@@ -118,8 +118,8 @@ suite('validation errors', function() {
 
       person.validate();
 
-      assert.deepEqual(['Name cannot be null'], person.getErrors().getFullMessages());
-      assert.deepEqual(['cannot be null'], person.getErrors().get('name'));
+      assert.deepEqual(person.getErrors().getFullMessages(), ['Name cannot be null']);
+      assert.deepEqual(person.getErrors().get('name'), ['cannot be null']);
 
       done();
     });
@@ -131,7 +131,7 @@ suite('validation errors', function() {
 
       person.getErrors().set('name', 'should not be null');
 
-      assert.deepEqual(['should not be null'], person.getErrors().get('name'));
+      assert.deepEqual(person.getErrors().get('name'), ['should not be null']);
 
       done();
     });
@@ -142,7 +142,7 @@ suite('validation errors', function() {
       if (err) { done(err); return; }
 
       person.getErrors().add('name', 'cannot be blank');
-      assert.deepEqual(['cannot be blank'], person.getErrors().get('name'));
+      assert.deepEqual(person.getErrors().get('name'), ['cannot be blank']);
 
       done();
     });
@@ -168,7 +168,7 @@ suite('validation errors', function() {
       var message = function() { return 'cannot be blank'; };
       person.getErrors().add('name', message);
 
-      assert.deepEqual(['cannot be blank'], person.getErrors().get('name'));
+      assert.deepEqual(person.getErrors().get('name'), ['cannot be blank']);
 
       done();
     });
@@ -274,7 +274,7 @@ suite('validation errors', function() {
       person.getErrors().add('name', 'cannot be blank');
       person.getErrors().add('name', 'cannot be null');
 
-      assert.deepEqual(['Name cannot be blank', 'Name cannot be null'], person.getErrors().toArray());
+      assert.deepEqual(person.getErrors().toArray(), ['Name cannot be blank', 'Name cannot be null']);
 
       done();
     });
@@ -297,7 +297,7 @@ suite('validation errors', function() {
 
       person.getErrors().add('name', 'cannot be blank');
       person.getErrors().add('name', 'cannot be null');
-      assert.deepEqual(['Name cannot be blank', 'Name cannot be null'], person.getErrors().getFullMessages());
+      assert.deepEqual(person.getErrors().getFullMessages(), ['Name cannot be blank', 'Name cannot be null']);
 
       done();
     });
@@ -310,7 +310,7 @@ suite('validation errors', function() {
       person.getErrors().add('name', 'cannot be blank');
       person.getErrors().add('name', 'cannot be null');
 
-      assert.deepEqual(['Name cannot be blank', 'Name cannot be null'], person.getErrors().getFullMessagesFor('name'));
+      assert.deepEqual(person.getErrors().getFullMessagesFor('name'), ['Name cannot be blank', 'Name cannot be null']);
 
       done();
     });
@@ -323,7 +323,7 @@ suite('validation errors', function() {
       person.getErrors().add('name', 'cannot be blank');
       person.getErrors().add('email', 'cannot be blank');
 
-      assert.deepEqual(['Name cannot be blank'], person.getErrors().getFullMessagesFor('name'));
+      assert.deepEqual(person.getErrors().getFullMessagesFor('name'), ['Name cannot be blank']);
 
       done();
     });
@@ -344,7 +344,7 @@ suite('validation errors', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      assert.equal('press the button', person.getErrors().getFullMessage(':base', 'press the button'));
+      assert.equal(person.getErrors().getFullMessage(':base', 'press the button'), 'press the button');
 
       done();
     });
@@ -354,8 +354,8 @@ suite('validation errors', function() {
     Person.new(function(err, person) {
       if (err) { done(err); return; }
 
-      assert.equal('Name cannot be blank', person.getErrors().getFullMessage('name', 'cannot be blank'));
-      assert.equal('Name test cannot be blank', person.getErrors().getFullMessage('name_test', 'cannot be blank'));
+      assert.equal(person.getErrors().getFullMessage('name', 'cannot be blank'), 'Name cannot be blank');
+      assert.equal(person.getErrors().getFullMessage('name_test', 'cannot be blank'), 'Name test cannot be blank');
 
       done();
     });
@@ -367,7 +367,7 @@ suite('validation errors', function() {
 
       person.validate();
 
-      assert.equal('{"name":["cannot be null"]}', person.getErrors().toJSON());
+      assert.equal(person.getErrors().toJSON(), '{"name":["cannot be null"]}');
 
       done();
     });
@@ -379,7 +379,7 @@ suite('validation errors', function() {
 
       person.validate();
 
-      assert.equal('{"name":["Name cannot be null"]}', person.getErrors().toJSON({ fullMessages: true }));
+      assert.equal(person.getErrors().toJSON({ fullMessages: true }), '{"name":["Name cannot be null"]}');
 
       done();
     });

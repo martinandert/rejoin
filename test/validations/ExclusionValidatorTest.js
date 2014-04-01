@@ -77,7 +77,7 @@ suite('exclusion validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['option monkey is restricted'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['option monkey is restricted']);
 
           done();
         });

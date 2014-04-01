@@ -206,7 +206,7 @@ suite('numericality validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['smaller than 4'], topic.getErrors().get('approved'));
+        assert.deepEqual(topic.getErrors().get('approved'), ['smaller than 4']);
 
         done();
       });
@@ -223,7 +223,7 @@ suite('numericality validator', function() {
         if (err) { done(err); return; }
 
         assert(!valid);
-        assert.deepEqual(['greater than 4'], topic.getErrors().get('approved'));
+        assert.deepEqual(topic.getErrors().get('approved'), ['greater than 4']);
 
         done();
       });

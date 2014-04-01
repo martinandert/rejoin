@@ -33,7 +33,7 @@ suite('inclusion validator', function() {
             if (err) { done(err); return; }
 
             assert.strictEqual(false, valid);
-            assert.deepEqual(['is not included in the list'], topic.getErrors().get('title'));
+            assert.deepEqual(topic.getErrors().get('title'), ['is not included in the list']);
 
             done();
           });
@@ -101,7 +101,7 @@ suite('inclusion validator', function() {
           if (err) { done(err); return; }
 
           assert(!valid);
-          assert.deepEqual(['option uhoh is not in the list'], topic.getErrors().get('title'));
+          assert.deepEqual(topic.getErrors().get('title'), ['option uhoh is not in the list']);
 
           done();
         });

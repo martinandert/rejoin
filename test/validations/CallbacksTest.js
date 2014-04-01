@@ -165,7 +165,7 @@ suite('validation callbacks', function() {
       dog.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['before_validation_marker', 'after_validation_marker'], dog.getHistory());
+        assert.deepEqual(dog.getHistory(), ['before_validation_marker', 'after_validation_marker']);
 
         done();
       });
@@ -179,7 +179,7 @@ suite('validation callbacks', function() {
       dog.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['before_validation_marker1', 'after_validation_marker1'], dog.getHistory());
+        assert.deepEqual(dog.getHistory(), ['before_validation_marker1', 'after_validation_marker1']);
 
         done();
       });
@@ -193,7 +193,7 @@ suite('validation callbacks', function() {
       dog.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['before_validation_marker', 'after_validation_marker'], dog.getHistory());
+        assert.deepEqual(dog.getHistory(), ['before_validation_marker', 'after_validation_marker']);
 
         done();
       });
@@ -207,7 +207,7 @@ suite('validation callbacks', function() {
       dog.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['before_validation_marker1', 'before_validation_marker2'], dog.getHistory());
+        assert.deepEqual(dog.getHistory(), ['before_validation_marker1', 'before_validation_marker2']);
 
         done();
       });
@@ -236,7 +236,7 @@ suite('validation callbacks', function() {
       dog.validate(function(err, valid) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(['before_validation_marker'], dog.getHistory());
+        assert.deepEqual(dog.getHistory(), ['before_validation_marker']);
         assert.strictEqual(false, valid);
 
         done();
