@@ -119,12 +119,14 @@ suite('confirmation validator', function() {
   });
 
   test('does not override confirmation reader if present', function(done) {
-    var model = Rejoin.createModel('Model1', {
-      prototype: {
+    var model = Rejoin.createModel('Model1', function(model) {
+      model.validatesConfirmationOf('title');
+
+      model.instanceMethods({
         getTitleConfirmation: function() {
           return 'expected title';
         }
-      }
+      });
     });
 
     model.validatesConfirmationOf('title');
@@ -139,14 +141,16 @@ suite('confirmation validator', function() {
   });
 
   test('does not override confirmation writer if present', function(done) {
-    var model = Rejoin.createModel('Model1', {
-      prototype: {
+    var model = Rejoin.createModel('Model2', function(model) {
+      model.validatesConfirmationOf('title');
+
+      model.instanceMethods({
         titleConfirmation: null,
 
         setTitleConfirmation: function(value) {
           this.titleConfirmation = value;
         }
-      }
+      });
     });
 
     model.validatesConfirmationOf('title');

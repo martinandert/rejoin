@@ -6,19 +6,19 @@ var sinon  = require('sinon');
 var Rejoin = require('../../');
 var Errors = require('../../lib/validations/Errors.js');
 
-var Person = Rejoin.createModel('Person', {
-  attributes: {
+var Person = Rejoin.createModel('APerson', function(model) {
+  model.attributes({
     name: Rejoin.DataType.STRING,
     age:  Rejoin.DataType.INTEGER
-  },
+  });
 
-  prototype: {
+  model.instanceMethods({
     validate: function() {
       if (this.getName() === null) {
         this.getErrors().add('name', 'cannot be null');
       }
     }
-  }
+  });
 });
 
 suite('validation errors', function() {

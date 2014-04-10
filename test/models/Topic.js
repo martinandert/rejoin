@@ -2,21 +2,18 @@
 
 var Rejoin = require('../../');
 
-module.exports = Rejoin.createModel('Topic', {
-  attributes: {
+module.exports = Rejoin.createModel('Topic', function(model) {
+  model.attributes({
     title:        Rejoin.DataType.STRING,
     author_name:  Rejoin.DataType.STRING,
     content:      Rejoin.DataType.TEXT,
     approved:     Rejoin.DataType.BOOLEAN,
     created_at:   Rejoin.DataType.DATETIME
-  },
+  });
 
-  callbacks: [{
-    on: Rejoin.Callback.AFTER_VALIDATION,
-    do: 'performAfterValidation'
-  }],
+  model.afterValidation('performAfterValidation');
 
-  prototype: {
+  model.instanceMethods({
     afterValidationPerformed: false,
 
     getConditionIsTrue: function() {
@@ -43,5 +40,5 @@ module.exports = Rejoin.createModel('Topic', {
         this.getErrors().add(attr, 'is missing');
       }
     }
-  }
+  });
 });

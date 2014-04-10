@@ -3,12 +3,12 @@
 var assert = require('assert');
 var Rejoin = require('../../');
 
-var Dog = Rejoin.createModel('Dog', {
-  attributes: {
+var Dog = Rejoin.createModel('Dog', function(model) {
+  model.attributes({
     name: Rejoin.DataType.STRING
-  },
+  });
 
-  prototype: {
+  model.instanceMethods({
     initialize: function() {
       this.history = [];
       this._super.apply(this, arguments);
@@ -17,21 +17,14 @@ var Dog = Rejoin.createModel('Dog', {
     getHistory: function() {
       return this.history;
     }
-  }
+  });
 });
 
-var DogWithMethodCallbacks = Rejoin.createModel('DogWithMethodCallbacks', {
-  extends: Dog,
+var DogWithMethodCallbacks = Rejoin.createModel('DogWithMethodCallbacks', Dog, function(model) {
+  model.beforeValidation('setBeforeValidationMarker');
+  model.afterValidation('setAfterValidationMarker');
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: 'setBeforeValidationMarker'
-  }, {
-    on: Rejoin.Callback.AFTER_VALIDATION,
-    do: 'setAfterValidationMarker'
-  }],
-
-  prototype: {
+  model.instanceMethods({
     setBeforeValidationMarker: function(done) {
       this.getHistory().push('before_validation_marker');
       done();
@@ -41,100 +34,61 @@ var DogWithMethodCallbacks = Rejoin.createModel('DogWithMethodCallbacks', {
       this.getHistory().push('after_validation_marker');
       done();
     }
-  }
+  });
 });
 
-var DogValidatorsAreFunctions = Rejoin.createModel('DogValidatorsAreFunctions', {
-  extends: Dog,
+var DogValidatorsAreFunctions = Rejoin.createModel('DogValidatorsAreFunctions', Dog, function(model) {
+  model.beforeValidation(function(done) {
+    this.getHistory().push('before_validation_marker');
+    done();
+  });
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('before_validation_marker');
-      done();
-    }
-  }, {
-    on: Rejoin.Callback.AFTER_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('after_validation_marker');
-      done();
-    }
-  }]
+  model.afterValidation(function(done) {
+    this.getHistory().push('after_validation_marker');
+    done();
+  });
 });
 
-var DogWithTwoValidators = Rejoin.createModel('DogWithTwoValidators', {
-  extends: Dog,
+var DogWithTwoValidators = Rejoin.createModel('DogWithTwoValidators', Dog, function(model) {
+  model.beforeValidation(function(done) {
+    this.getHistory().push('before_validation_marker1');
+    done();
+  });
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('before_validation_marker1');
-      done();
-    }
-  }, {
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('before_validation_marker2');
-      done();
-    }
-  }]
+  model.beforeValidation(function(done) {
+    this.getHistory().push('before_validation_marker2');
+    done();
+  });
 });
 
-var DogValidatorReturningFalse = Rejoin.createModel('DogValidatorReturningFalse', {
-  extends: Dog,
+var DogValidatorReturningFalse = Rejoin.createModel('DogValidatorReturningFalse', Dog, function(model) {
+  model.beforeValidation(function(done) {
+    done(null, true);
+  });
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      done(null, true);
-    }
-  }, {
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('before_validation_marker2');
-      done();
-    }
-  }]
+  model.beforeValidation(function(done) {
+    this.getHistory().push('before_validation_marker2');
+    done();
+  });
 });
 
-var DogWithMissingName = Rejoin.createModel('DogWithMissingName', {
-  extends: Dog,
+var DogWithMissingName = Rejoin.createModel('DogWithMissingName', Dog, function(model) {
+  model.beforeValidation(function(done) {
+    this.getHistory().push('before_validation_marker');
+    done();
+  });
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: function(done) {
-      this.getHistory().push('before_validation_marker');
-      done();
-    }
-  }],
-
-  validations: {
-    name: { presence: true }
-  }
+  model.validatesPresenceOf('name');
 });
 
-var DogValidatorWithIfCondition = Rejoin.createModel('DogValidatorWithIfCondition', {
-  extends: Dog,
+var DogValidatorWithIfCondition = Rejoin.createModel('DogValidatorWithIfCondition', Dog, function(model) {
+  model.beforeValidation('setBeforeValidationMarker1', { if: function() { return true; } });
+  model.beforeValidation('setBeforeValidationMarker2', { if: function() { return false; } });
 
-  callbacks: [{
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: 'setBeforeValidationMarker1',
-    if: function() { return true; }
-  }, {
-    on: Rejoin.Callback.BEFORE_VALIDATION,
-    do: 'setBeforeValidationMarker2',
-    if: function() { return false; }
-  }, {
-    on: Rejoin.Callback.AFTER_VALIDATION,
-    do: 'setAfterValidationMarker1',
-    if: function() { return true; }
-  }, {
-    on: Rejoin.Callback.AFTER_VALIDATION,
-    do: 'setAfterValidationMarker2',
-    if: function() { return false; }
-  }],
+  model.afterValidation('setAfterValidationMarker1', { if: function() { return true; } });
+  model.afterValidation('setAfterValidationMarker2', { if: function() { return false; } });
 
-  prototype: {
+  model.instanceMethods({
     setBeforeValidationMarker1: function(done) {
       this.getHistory().push('before_validation_marker1');
       done();
@@ -154,7 +108,7 @@ var DogValidatorWithIfCondition = Rejoin.createModel('DogValidatorWithIfConditio
       this.getHistory().push('after_validation_marker2');
       done();
     }
-  }
+  });
 });
 
 suite('validation callbacks', function() {
