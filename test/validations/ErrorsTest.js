@@ -4,7 +4,7 @@ var assert = require('assert');
 var sinon  = require('sinon');
 
 var Rejoin = require('../../');
-var Errors = require('../../lib/validations/Errors.js');
+var Errors = require('../../lib/internal/Errors.js');
 
 var Person = Rejoin.createModel('APerson', function(model) {
   model.attributes({
