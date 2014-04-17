@@ -2,6 +2,7 @@
 
 var _           = require('lodash-node');
 var assert      = require('assert');
+var Rejoin      = require('../../');
 var Topic       = require('../models/Topic');
 var Reply       = require('../models/Reply');
 var Automobile  = require('../models/Automobile');
@@ -420,115 +421,144 @@ suite('validations mixin', function() {
       });
     });
   });
+
+  test('strict validation in validates blank', function(done) {
+    Topic.validates('title', { strict: true, presence: true, length: { maximum: 3 } });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.StrictValidationFailed) {
+          assert.equal(err.message, 'Title cannot be blank');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with strict error'));
+        }
+      });
+    });
+  });
+
+  test('strict validation in validates not blank', function(done) {
+    Topic.validates('title', { strict: true, presence: true, length: { maximum: 3 } });
+
+    Topic.new({ title: 'four' }, function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.StrictValidationFailed) {
+          assert.equal(err.message, 'Title is too long (maximum is 3 characters)');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with strict error'));
+        }
+      });
+    });
+  });
+
+  test('strict validation not fails', function(done) {
+    Topic.validates('title', { strict: true, presence: true, length: { maximum: 3 } });
+
+    Topic.new({ title: 'foo' }, function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err) { done(err); return; }
+
+        assert(valid);
+        done();
+      });
+    });
+  });
+
+  test('strict validation for particular validator', function(done) {
+    Topic.validates('title', { presence: { strict: true } });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.StrictValidationFailed) {
+          assert.equal(err.message, 'Title cannot be blank');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with strict error'));
+        }
+      });
+    });
+  });
+
+  test('strict validation in custom validation helper', function(done) {
+    Topic.validatesPresenceOf('title', { strict: true });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.StrictValidationFailed) {
+          assert.equal(err.message, 'Title cannot be blank');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with strict error'));
+        }
+      });
+    });
+  });
+
+  test('strict validation with custom exception', function(done) {
+    Topic.validatesPresenceOf('title', { strict: Rejoin.Errors.RecordInvalid });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.RecordInvalid) {
+          assert.equal(err.message, 'Title cannot be blank');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with RecordInvalid error'));
+        }
+      });
+    });
+  });
+
+  test('validates with bang', function(done) {
+    Topic.validatesStrict('title', { presence: true });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err instanceof Rejoin.Errors.StrictValidationFailed) {
+          assert.equal(err.message, 'Title cannot be blank');
+          done();
+        } else {
+          done(new Error('expected validate() to be called back with strict error'));
+        }
+      });
+    });
+  });
+
+  test('validates with false hash value', function(done) {
+    Topic.validates('title', { presence: false });
+
+    Topic.new(function(err, record) {
+      if (err) { done(err); return; }
+
+      record.validate(function(err, valid) {
+        if (err) { done(err); return; }
+
+        assert(valid);
+        done();
+      });
+    });
+  });
+
+  test('validates does not modify options argument', function() {
+    var options = { presence: true };
+
+    Topic.validates('title', options);
+
+    assert.deepEqual(options, { presence: true });
+  });
 });
-
-/*
-
-  def test_validations_on_the_instance_level
-    auto = Automobile.new
-
-    assert          auto.invalid?
-    assert_equal 3, auto.errors.size
-
-    auto.make  = 'Toyota'
-    auto.model = 'Corolla'
-    auto.approved = '1'
-
-    assert auto.valid?
-  end
-
-  def test_strict_validation_in_validates
-    Topic.validates :title, strict: true, presence: true
-    assert_raises ActiveModel::StrictValidationFailed do
-      Topic.new.valid?
-    end
-  end
-
-  def test_strict_validation_not_fails
-    Topic.validates :title, strict: true, presence: true
-    assert Topic.new(title: "hello").valid?
-  end
-
-  def test_strict_validation_particular_validator
-    Topic.validates :title, presence: { strict: true }
-    assert_raises ActiveModel::StrictValidationFailed do
-      Topic.new.valid?
-    end
-  end
-
-  def test_strict_validation_in_custom_validator_helper
-    Topic.validates_presence_of :title, strict: true
-    assert_raises ActiveModel::StrictValidationFailed do
-      Topic.new.valid?
-    end
-  end
-
-  def test_strict_validation_custom_exception
-    Topic.validates_presence_of :title, strict: CustomStrictValidationException
-    assert_raises CustomStrictValidationException do
-      Topic.new.valid?
-    end
-  end
-
-  def test_validates_with_bang
-    Topic.validates! :title, presence: true
-    assert_raises ActiveModel::StrictValidationFailed do
-      Topic.new.valid?
-    end
-  end
-
-  def test_validates_with_false_hash_value
-    Topic.validates :title, presence: false
-    assert Topic.new.valid?
-  end
-
-  def test_strict_validation_error_message
-    Topic.validates :title, strict: true, presence: true
-
-    exception = assert_raises(ActiveModel::StrictValidationFailed) do
-      Topic.new.valid?
-    end
-    assert_equal "Title can't be blank", exception.message
-  end
-
-  def test_does_not_modify_options_argument
-    options = { presence: true }
-    Topic.validates :title, options
-    assert_equal({ presence: true }, options)
-  end
-
-  def test_dup_validity_is_independent
-    Topic.validates_presence_of :title
-    topic = Topic.new("title" => "Literature")
-    topic.valid?
-
-    duped = topic.dup
-    duped.title = nil
-    assert duped.invalid?
-
-    topic.title = nil
-    duped.title = 'Mathematics'
-    assert topic.invalid?
-    assert duped.valid?
-  end
-
-   # validator test:
-  def test_setup_is_deprecated_but_still_receives_klass # TODO: remove me in 4.2.
-    validator_class = Class.new(ActiveModel::Validator) do
-      def setup(klass)
-        @old_klass = klass
-      end
-
-      def validate(*)
-        @old_klass == Topic or raise "#setup didn't work"
-      end
-    end
-
-    assert_deprecated do
-      Topic.validates_with validator_class
-    end
-
-    t = Topic.new
-    t.valid?
-  end
-*/
