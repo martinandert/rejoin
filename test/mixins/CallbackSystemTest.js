@@ -1,8 +1,9 @@
 'use strict';
 
-var _           = require('lodash-node');
-var assert      = require('assert');
-var Rejoin      = require('../../');
+var _       = require('lodash-node');
+var assert  = require('assert');
+var async   = require('async');
+var Rejoin  = require('../../');
 
 var CallbackSystem = require('../../lib/mixins/CallbackSystem');
 var Type    = Rejoin.CallbackType;
@@ -438,48 +439,25 @@ var DuplicatingCallbacksInSameCall = Rejoin.createModel('DuplicatingCallbacksInS
   model.setCallback('save', Type.BEFORE, 'first', 'second', 'first', 'third');
 });
 
-/*
-class OneTwoThreeSave
-    include ActiveSupport::Callbacks
-
-    define_callbacks :save
-
-    attr_accessor :record
-
-    def initialize
-      @record = []
-    end
-
-    def save
-      run_callbacks :save do
-        @record << "yielded"
-      end
-    end
-
-    def first
-      @record << "one"
-    end
-
-    def second
-      @record << "two"
-    end
-
-    def third
-      @record << "three"
-    end
-  end
 
 
-*/
+function buildModelWithFilter(filter, n) {
+  n = n || 1;
 
-function buildModelWithFilter(filter) {
   return Rejoin.createModel(_.uniqueId('ModelNo'), NewBase, function(model) {
     model.mixin(CallbackSystem);
     model.defineCallbacks('foo');
-    model.setCallback('foo', Type.BEFORE, filter);
+
+    for (var i = 0; i < n; i++) {
+      model.setCallback('foo', Type.BEFORE, filter);
+    }
 
     model.instanceMethod('run', function(callback) {
       this.runCallbacks('foo', callback);
+    });
+
+    model.classMethod('skip', function(thing) {
+      this.skipCallback('foo', Type.BEFORE, thing);
     });
   });
 }
@@ -502,6 +480,27 @@ function buildModelWithCondition(condition) {
   });
 }
 
+function buildModelWithMemo(memo) {
+  return Rejoin.createModel(_.uniqueId('ModelNo'), NewBase, function(model) {
+    model.mixin(CallbackSystem);
+    model.defineCallbacks('foo');
+    model.setCallback('foo', Type.BEFORE, 'hello');
+
+    model.instanceMethods({
+      hello: function(done) {
+        memo.push('hi');
+        done();
+      },
+
+      run: function(callback) {
+        this.runCallbacks('foo', callback);
+      }
+    });
+  });
+}
+
+
+
 suite('callback system mixin', function() {
   test('optimized first compile', function(done) {
     OneTimeCompile.new(function(err, around) {
@@ -510,7 +509,10 @@ suite('callback system mixin', function() {
       around.save(function(err, _) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(around.getHistory(), [['beforeSave', 'startsTrue', 'if'], ['beforeSave', 'startsTrue', 'unless']]);
+        assert.deepEqual(around.getHistory(), [
+          ['beforeSave', 'startsTrue', 'if'],
+          ['beforeSave', 'startsTrue', 'unless']
+        ]);
 
         done();
       });
@@ -524,7 +526,10 @@ suite('callback system mixin', function() {
       person.save(function(err, _) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(person.getHistory(), [['afterSave', 'string2'], ['afterSave', 'string1']]);
+        assert.deepEqual(person.getHistory(), [
+          ['afterSave', 'string2'],
+          ['afterSave', 'string1']
+        ]);
 
         done();
       });
@@ -553,7 +558,16 @@ suite('callback system mixin', function() {
       person.save(function(err, result) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(person.getHistory(), [['beforeSave', 'function'], ['beforeSave', 'class'], ['beforeSave', 'block'], ['afterSave', 'block'], ['afterSave', 'class'], ['afterSave', 'object'], ['afterSave', 'function'], ['afterSave', 'string']]);
+        assert.deepEqual(person.getHistory(), [
+          ['beforeSave', 'function'],
+          ['beforeSave', 'object'],
+          ['beforeSave', 'block'],
+          ['afterSave', 'block'],
+          ['afterSave', 'class'],
+          ['afterSave', 'object'],
+          ['afterSave', 'function'],
+          ['afterSave', 'string']
+        ]);
 
         done();
       });
@@ -575,7 +589,13 @@ suite('callback system mixin', function() {
       person.save(function(err, result) {
         if (err) { done(err); return; }
 
-        assert.deepEqual(person.getHistory(), [['afterSave', 'block'], ['afterSave', 'class'], ['afterSave', 'object'], ['afterSave', 'function'], ['afterSave', 'string']]);
+        assert.deepEqual(person.getHistory(), [
+          ['afterSave', 'block'],
+          ['afterSave', 'class'],
+          ['afterSave', 'object'],
+          ['afterSave', 'function'],
+          ['afterSave', 'string']
+        ]);
 
         done();
       });
@@ -917,131 +937,475 @@ suite('callback system mixin', function() {
       o.run();
     }, /invalid conditional arity/);
   });
+
+  test('reset callbacks', function(done) {
+    var events = [];
+    var Model = buildModelWithMemo(events);
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(events.length, 1);
+
+        Model.resetCallbacks('foo');
+
+        Model.new(function(err, o) {
+          if (err) { done(err); return; }
+
+          o.run(function(err, result) {
+            if (err) { done(err); return; }
+
+            assert.equal(events.length, 1);
+
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  test('reset_impacts_subclasses', function(done) {
+    var events = [];
+    var Model = buildModelWithMemo(events);
+
+    var Subclass = Rejoin.createModel(Model.name + 'Subclass', Model, function(model) {
+      model.setCallback('foo', Type.BEFORE, 'world');
+
+      model.instanceMethod('world', function(done) {
+        events.push('world');
+        done();
+      });
+    });
+
+    Subclass.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(events.length, 2);
+
+        Model.resetCallbacks('foo');
+
+        Subclass.new(function(err, o) {
+          if (err) { done(err); return; }
+
+          o.run(function(err, result) {
+            if (err) { done(err); return; }
+
+            assert.equal(events.length, 3);
+
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  test('add object', function(done) {
+    var calls = [];
+    var filter = { before: function(o, done) { calls.push(o); done(); } };
+    var Model = buildModelWithFilter(filter, 10);
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(calls.length, 10);
+
+        done();
+      });
+    });
+  });
+
+  test('add lambda', function(done) {
+    var calls = [];
+    var filter = function(o, done) { calls.push(o); done(); };
+    var Model = buildModelWithFilter(filter, 10);
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(calls.length, 10);
+
+        done();
+      });
+    });
+  });
+
+  test('add string', function(done) {
+    var calls = [];
+    var filter = 'bar';
+    var Model = buildModelWithFilter(filter, 10);
+
+    Model.instanceMethod(filter, function(done) {
+      calls.push(Model);
+      done();
+    });
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(calls.length, 1);
+
+        done();
+      });
+    });
+  });
+
+  test('skip object', function(done) {
+    var calls = [];
+    var filter = { before: function(o, done) { calls.push(o); done(); } };
+    var Model = buildModelWithFilter(filter, 10);
+
+    var fn = function(i, callback) {
+      Model.skip(filter);
+
+      Model.new(function(err, o) {
+        if (err) { done(err); return; }
+
+        o.run(function(err, result) {
+          if (err) { done(err); return; }
+
+          assert.equal(calls.length, i);
+          calls = [];
+
+          callback();
+        });
+      });
+    };
+
+    async.eachSeries([9, 8, 7, 6, 5, 4, 3, 2, 1, 0], fn, done);
+  });
+
+  test('skip function', function(done) {
+    var calls = [];
+    var filter = function(o, done) { calls.push(o); done(); };
+    var Model = buildModelWithFilter(filter, 10);
+
+    for (var i = 0; i < 10; i++) {
+      Model.skip(filter);
+    }
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(calls.length, 10);
+
+        done();
+      });
+    });
+  });
+
+  test('skip string', function(done) {
+    var calls = [];
+    var filter = 'bar';
+    var Model = buildModelWithFilter(filter, 10);
+
+    Model.instanceMethod(filter, function(done) {
+      calls.push(Model);
+      done();
+    });
+
+    Model.skip(filter);
+
+    Model.new(function(err, o) {
+      if (err) { done(err); return; }
+
+      o.run(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(calls.length, 0);
+
+        done();
+      });
+    });
+  });
 });
 
-/*
 
-  class ResetCallbackTest < ActiveSupport::TestCase
-    def build_class(memo)
-      klass = Class.new {
-        include ActiveSupport::Callbacks
-        define_callbacks :foo
-        set_callback :foo, :before, :hello
-        def run; run_callbacks :foo; end
+
+var GrandParent = Rejoin.createModel(_.uniqueId('ModelNo'), NewBase, function(model) {
+  model.mixin(CallbackSystem);
+  model.defineCallbacks('dispatch');
+  model.setCallback('dispatch', Type.BEFORE, 'before1', 'before2', { if: function(c) { return c.actionName === 'index' || c.actionName === 'update'; } });
+  model.setCallback('dispatch', Type.AFTER, 'after1', 'after2', { if: function(c) { return c.actionName === 'update' || c.actionName === 'delete'; } });
+
+  model.instanceMethods({
+    initialize: function(actionName, callback) {
+      this.actionName = actionName;
+      this.log = [];
+      this._super(callback);
+    },
+
+    before1: function(done) {
+      this.log.push('before1');
+      done();
+    },
+
+    before2: function(done) {
+      this.log.push('before2');
+      done();
+    },
+
+    after1: function(done) {
+      this.log.push('after1');
+      done();
+    },
+
+    after2: function(done) {
+      this.log.push('after2');
+      done();
+    },
+
+    dispatch: function(callback) {
+      var self = this;
+
+      this.runCallbacks('dispatch', function(cb) { self.log.push(self.actionName); cb(); }, callback);
+    }
+  });
+});
+
+var Parent = Rejoin.createModel(_.uniqueId('ModelNo'), GrandParent, function(model) {
+  model.skipCallback('dispatch', Type.BEFORE, 'before2', { unless: function(c) { return c.actionName === 'update'; } });
+  model.skipCallback('dispatch', Type.AFTER, 'after2', { unless: function(c) { return c.actionName === 'delete'; } });
+});
+
+var Child = Rejoin.createModel(_.uniqueId('ModelNo'), GrandParent, function(model) {
+  model.skipCallback('dispatch', Type.BEFORE, 'before2', { unless: function(c) { return c.actionName === 'update'; }, if: 'isStateOpen' });
+
+  model.instanceMethods({
+    initialize: function(actionName, state, callback) {
+      this.state = state;
+      this._super(actionName, callback);
+    },
+
+    isStateOpen: function() {
+      return this.state === 'open';
+    }
+  });
+});
+
+var EmptyParent = Rejoin.createModel(_.uniqueId('ModelNo'), NewBase, function(model) {
+  model.mixin(CallbackSystem);
+  model.defineCallbacks('dispatch');
+
+  model.instanceMethods({
+    performed: function() {
+      if (typeof this._performed === 'undefined') {
+        this._performed = false;
       }
-      klass.class_eval {
-        define_method(:hello) { memo << :hi }
-      }
-      klass
-    end
 
-    def test_reset_callbacks
-      events = []
-      klass = build_class events
-      klass.new.run
-      assert_equal 1, events.length
+      return this._performed;
+    },
 
-      klass.reset_callbacks :foo
-      klass.new.run
-      assert_equal 1, events.length
-    end
+    perform: function(done) {
+      this._performed = true;
+      done();
+    },
 
-    def test_reset_impacts_subclasses
-      events = []
-      klass = build_class events
-      subclass = Class.new(klass) { set_callback :foo, :before, :world }
-      subclass.class_eval { define_method(:world) { events << :world } }
+    dispatch: function(callback) {
+      this.runCallbacks('dispatch', callback);
+    }
+  });
+});
 
-      subclass.new.run
-      assert_equal 2, events.length
+var EmptyChild = Rejoin.createModel(_.uniqueId('ModelNo'), EmptyParent, function(model) {
+  model.setCallback('dispatch', Type.BEFORE, 'doNothing');
 
-      klass.reset_callbacks :foo
-      subclass.new.run
-      assert_equal 3, events.length
-    end
-  end
+  model.instanceMethod('doNothing', function(done) { done(); });
+});
 
-  class CallbackTypeTest < ActiveSupport::TestCase
-    def build_class(callback, n = 10)
-      Class.new {
-        include ActiveSupport::Callbacks
-        define_callbacks :foo
-        n.times { set_callback :foo, :before, callback }
-        def run; run_callbacks :foo; end
-        def self.skip(thing); skip_callback :foo, :before, thing; end
-      }
-    end
+var CountingParent = Rejoin.createModel(_.uniqueId('ModelNo'), NewBase, function(model) {
+  model.mixin(CallbackSystem);
+  model.defineCallbacks('dispatch');
 
-    def test_add_class
-      calls = []
-      callback = Class.new {
-        define_singleton_method(:before) { |o| calls << o }
-      }
-      build_class(callback).new.run
-      assert_equal 10, calls.length
-    end
+  model.instanceMethods({
+    initialize: function() {
+      this.count = 0;
+      this._super.apply(this, arguments);
+    },
 
-    def test_add_lambda
-      calls = []
-      build_class(->(o) { calls << o }).new.run
-      assert_equal 10, calls.length
-    end
+    increment: function() {
+      this.count++;
+    },
 
-    def test_add_symbol
-      calls = []
-      klass = build_class(:bar)
-      klass.class_eval { define_method(:bar) { calls << klass } }
-      klass.new.run
-      assert_equal 1, calls.length
-    end
+    dispatch: function(callback) {
+      this.runCallbacks('dispatch', callback);
+    }
+  });
+});
 
-    def test_add_eval
-      calls = []
-      klass = build_class("bar")
-      klass.class_eval { define_method(:bar) { calls << klass } }
-      klass.new.run
-      assert_equal 1, calls.length
-    end
+var CountingChild = Rejoin.createModel(_.uniqueId('ModelNo'), CountingParent);
 
-    def test_skip_class # removes one at a time
-      calls = []
-      callback = Class.new {
-        define_singleton_method(:before) { |o| calls << o }
-      }
-      klass = build_class(callback)
-      9.downto(0) { |i|
-        klass.skip callback
-        klass.new.run
-        assert_equal i, calls.length
-        calls.clear
-      }
-    end
 
-    def test_skip_lambda # removes nothing
-      calls = []
-      callback = ->(o) { calls << o }
-      klass = build_class(callback)
-      10.times { klass.skip callback }
-      klass.new.run
-      assert_equal 10, calls.length
-    end
 
-    def test_skip_symbol # removes all
-      calls = []
-      klass = build_class(:bar)
-      klass.class_eval { define_method(:bar) { calls << klass } }
-      klass.skip :bar
-      klass.new.run
-      assert_equal 0, calls.length
-    end
+suite('callback system mixin inheritance', function() {
+  test('basic conditional callback1', function(done) {
+    GrandParent.new('index', function(err, o) {
+      if (err) { done(err); return; }
 
-    def test_skip_eval # removes nothing
-      calls = []
-      klass = build_class("bar")
-      klass.class_eval { define_method(:bar) { calls << klass } }
-      klass.skip "bar"
-      klass.new.run
-      assert_equal 1, calls.length
-    end
-  end
-*/
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'before2', 'index']);
+
+        done();
+      });
+    });
+  });
+
+  test('basic conditional callback2', function(done) {
+    GrandParent.new('update', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'before2', 'update', 'after2', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('basic conditional callback3', function(done) {
+    GrandParent.new('delete', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['delete', 'after2', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('inherited excluded', function(done) {
+    Parent.new('index', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'index']);
+
+        done();
+      });
+    });
+  });
+
+  test('inherited not excluded', function(done) {
+    Parent.new('update', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'before2', 'update', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('inherited partially excluded', function(done) {
+    Parent.new('delete', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['delete', 'after2', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('crazy mix on', function(done) {
+    Child.new('update', 'open', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'update', 'after2', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('crazy mix off', function(done) {
+    Child.new('update', 'closed', function(err, o) {
+      if (err) { done(err); return; }
+
+      o.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.deepEqual(o.log, ['before1', 'before2', 'update', 'after2', 'after1']);
+
+        done();
+      });
+    });
+  });
+
+  test('callbacks looks to the superclass before running', function(done) {
+    EmptyChild.new(function(err, child) {
+      if (err) { done(err); return; }
+
+      child.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert(!child.performed());
+
+        EmptyParent.setCallback('dispatch', Type.BEFORE, 'perform');
+
+        EmptyChild.new(function(err, child) {
+          if (err) { done(err); return; }
+
+          child.dispatch(function(err, result) {
+            if (err) { done(err); return; }
+
+            assert(child.performed());
+
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  test('callbacks should be performed once in child class', function(done) {
+    CountingParent.setCallback('dispatch', Type.BEFORE, function(done) { this.increment(); done(); });
+
+    CountingChild.new(function(err, child) {
+      if (err) { done(err); return; }
+
+      child.dispatch(function(err, result) {
+        if (err) { done(err); return; }
+
+        assert.equal(child.count, 1);
+
+        done();
+      });
+    });
+  });
+});
